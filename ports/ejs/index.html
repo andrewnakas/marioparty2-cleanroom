@@ -100,7 +100,9 @@
         window.__mpTap.getFloatTimeDomainData(a);
         rms = " rms=" + Math.sqrt(a.reduce((s, v) => s + v * v, 0) / a.length).toFixed(4);
       }
-      log(`MPHB ${((performance.now() - t0) / 1000).toFixed(0)}s${rms}`);
+      let fr = "";
+      try { fr = " frame=" + window.EJS_emulator.gameManager.getFrameNum(); } catch (e) {}
+      log(`MPHB ${((performance.now() - t0) / 1000).toFixed(0)}s${rms}${fr}`);
     }, 2500);
   };
 })();

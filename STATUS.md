@@ -54,6 +54,13 @@
 - The raw scan blanks files kept as they are (motions, path tables 10/64-80, glyph metrics) like the pack layout
   tables: they equal retail by design and are listed as kept facts.
 
+## Headless testing notes
+- Start (Enter) skips Toad's entrance in Mario Land; two or three Start presses then A. Scripts in `look.py` syntax.
+- In silent scenes (Mario Land hub has no music) the emulated frame counter drops to ~1 frame/s in headless Edge,
+  for the dev build with retail pictures as well as the clean ROM (heartbeat now logs `frame=`), and core options
+  (FB emulation off, interpreter) do not change it. A-presses of 0.15 s get lost there, which made the clean ROM
+  look slow. Not yet checked in a real browser with sound on: if the hub feels slow there, tell me.
+
 ## Next
 1. Walk a full game on the clean ROM: mode select, a real board turn, a minigame, results.
 2. Board backgrounds and the 89 minigame instruction pictures are a blur of the kept grid: draw paths / flat regions.
