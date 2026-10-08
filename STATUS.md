@@ -1,10 +1,18 @@
 # Mario Party 2 clean room: status
 
 ## State (2026-10-08)
-- Pipeline ported from the finished Mario Party 1 clean room (`D:/n64work/marioparty-cleanroom`): clean ROM =
-  retail program + every picture and sound regenerated, played in the browser by EmulatorJS (mupen64plus_next).
-- Dev builds boot in headless Edge: intro, dialog font readable, audio flowing with all 903 samples regenerated.
-- Not yet published: waiting for the full build (pictures) + taint 0.
+- **Published**: https://andrewnakas.github.io/marioparty2-cleanroom/ (repo `andrewnakas/marioparty2-cleanroom`, site on
+  `gh-pages`).
+- Clean ROM = retail program + every picture and sound regenerated: 6151 MainFS images, 67 backgrounds (4141
+  tiles), 103 animated tiles, 89 stills, 903 waves. 32 MB. Our picture decoder replaces the HVQ-MPS decoder.
+- **Taint: 0 failing** (`TAINT.md`): textures, pictures, samples, raw image, plus a map of every differing byte.
+- Checked headless (muted): clean ROM boots, logos, title, Mario Land. Rules Land board (dice, turns, HUD) was
+  walked on a dev build with retail backgrounds; audio level over a scripted run follows the retail pattern.
+- Painted / typeset: six players' faces (near + far models, 17 expressions), HUD + menu portraits (MP1 busts),
+  fonts, digits, names, ranks, COM, dice faces, START/FINISH/TIME UP/GOAL/DRAW/MISS/CLEAR/GAME OVER/PAUSE,
+  mode and menu labels, land logos, button icons, title logo and land signs inside backgrounds (`scenes2.py`).
+- Voices: 28 placeholder lines (Piper) in `games/marioparty2/voices/`; practice pack in
+  `D:/n64work/mp2work/practice/` (announcer, mario, luigi, peach, wario + `SCRIPT.txt`).
 
 ## Decisions (logged as made)
 - ROM `Mario Party 2 (USA).z64` sha1 166eda1c… (copied from `D:/n64work/marioparty2/private/`, another session's
@@ -40,5 +48,24 @@
 - Dev (dirty): `preview.py` (retail|clean pairs for a dir without building), `atlas.py`, `look.py` (boot +
   contact sheet), `voice_scan.py`.
 
+## Taint notes
+- 12 textures render with 8 levels (`generate.COARSE`) and backgrounds 19 and 21 have a shifted lattice
+  (`generate.NUDGE`): each had one chance run of 33-46 B at 16 levels.
+- The raw scan blanks files kept as they are (motions, path tables 10/64-80, glyph metrics) like the pack layout
+  tables: they equal retail by design and are listed as kept facts.
+
 ## Next
-See the end of this file after each session.
+1. Walk a full game on the clean ROM: mode select, a real board turn, a minigame, results.
+2. Board backgrounds and the 89 minigame instruction pictures are a blur of the kept grid: draw paths / flat regions.
+3. Space icons, item icons, NPC portraits (0/92-132), intro arch signs (dir 14), mode badges in dir 9 (HARD/NORMAL/EASY,
+   1P-4P/COM, BATTLE/TRIAL/DUEL), name plates 10/359-368.
+4. Palette sharing: splash sprites 0/48/p8-12 turn green because they share 16 colours with typeset digits.
+5. Voices: confirm speakers by ear; Yoshi and DK have no lines yet.
+
+## For the morning
+- Open https://andrewnakas.github.io/marioparty2-cleanroom/ : Enter = Start, X = A. First ROM download can take a
+  minute. Tell me what looks wrong first.
+- Known rough spots: backgrounds are blurred colour; many icons are colour blobs; Wario's face layout is a guess.
+- To record voices: `D:/n64work/mp2work/practice/` (SCRIPT.txt + `practice_<who>_call_and_response.wav`). Lines marked
+  (?) had their speaker and sometimes their words guessed by a speech recogniser: listen first.
+- Another session's folder `D:/n64work/marioparty2/` (ROM-import emulator bridge) was left untouched.
