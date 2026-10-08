@@ -4,7 +4,7 @@
 
 Four content scans (cleanroom.taint: 16-byte windows, runs >= FAIL_RUN bytes fail), like against like:
   textures   every MainFS image as RGBA bytes (retail vs clean, decoded from their containers)
-  pictures   every pre-rendered background tile / still as RGBA bytes (retail: HVQ2 decoded by the game's own
+  pictures   every pre-rendered background tile / still as RGBA bytes (retail: HVQ-MPS decoded by the game's own
              decoder in the dirty room; clean: our CRQ pictures decoded)
   samples    every wave: decoded PCM and the stored sample bytes
   raw        the clean image from the first asset byte to the end, against the retail *stored* bytes of every
@@ -21,7 +21,8 @@ import numpy as np
 from cleanroom import taint
 from . import audio, hvq_dirty, hvqfs, images, mainfs
 
-ASSETS_START = 0x31BFE0
+ASSETS_START = mainfs.ROM_OFFSET
+AUDIO_END = 0x1E2AFA0          # 0xFF padding from here to the end of the retail image
 
 
 def _rgba(px):
@@ -84,15 +85,15 @@ def _without_pack_tables(clean):
         for f in range(u32(doff)):
             foff = doff + u32(doff + 4 + 4 * f)
             size, kind = u32(foff), u32(foff + 4)
-            if kind != 1 or size < 0x2C:
+            if kind not in (1, 2) or size < 0x2C:
                 continue
-            head, _ = mainfs.decompress(1, clean, foff + 8, 0x20)
+            head, _ = mainfs.decompress(kind, clean, foff + 8, 0x20)
             if struct.unpack_from(">I", head, 0)[0] not in (0x20, 0x1B):
                 continue
             images_off = struct.unpack_from(">I", head, 8)[0]
             if not 0x20 <= images_off <= size:
                 continue
-            _, used = mainfs.decompress(1, clean, foff + 8, images_off)
+            _, used = mainfs.decompress(kind, clean, foff + 8, images_off)
             out[foff + 8:foff + 8 + used] = bytes(used)
             n += 1
     return bytes(out), n
@@ -127,18 +128,25 @@ def main(argv):
             yield f"bg/{b}", hvq_dirty.bg(b).tobytes()
         for d, files in enumerate(rdirs):
             for f, e in enumerate(files):
-                if e["raw"][:4] == b"HVQ ":
+                if e["raw"][:12] == hvqfs.MAGIC:
                     yield f"still/{d}/{f}", hvq_dirty.fs(d, f).tobytes()
+        for s, entries in enumerate(hvqfs.anim_read(retail)):
+            for e, tiles in enumerate(entries):
+                yield f"anim/{s}/{e}", b"".join(_rgba(np.frombuffer(raw, ">u2").reshape(48, 64)) for _, raw in tiles)
 
     def clean_pics():
         for b, files in enumerate(hvqfs.read(clean)):
-            assert all(t[:3] == b"CRQ" for t in files[1:]), "retail picture left in the clean ROM"
-            yield f"bg/{b}", b"".join(_rgba(hvqfs.uncrq(t)) for t in files[1:])
+            assert all(t[:7] == b"HVQSCRQ" for t in files[2:]), "retail picture left in the clean ROM"
+            assert files[1] == hvqfs.blank_header(files[1]), "retail picture header left in the clean ROM"
+            yield f"bg/{b}", b"".join(_rgba(hvqfs.uncrq(t[4:])) for t in files[2:])
         for d, files in enumerate(cdirs):
             for f, e in enumerate(files):
-                assert e["raw"][:4] != b"HVQ ", "retail still left in the clean ROM"
-                if e["raw"][:3] == b"CRQ":
-                    yield f"still/{d}/{f}", _rgba(hvqfs.uncrq(e["raw"]))
+                if e["raw"][:12] == hvqfs.MAGIC:
+                    assert e["raw"] == hvqfs.blank_header(e["raw"]) and files[f - 1]["raw"][:3] == b"CRQ",                         "retail still left in the clean ROM"
+                    yield f"still/{d}/{f}", _rgba(hvqfs.uncrq(files[f - 1]["raw"]))
+        for s, entries in enumerate(hvqfs.anim_read(clean)):
+            for e, tiles in enumerate(entries):
+                yield f"anim/{s}/{e}", b"".join(_rgba(np.frombuffer(raw, ">u2").reshape(48, 64)) for _, raw in tiles)
 
     bad += _scan("pictures", retail_pics(), clean_pics(), results)
 
@@ -159,8 +167,11 @@ def main(argv):
             for f, e in enumerate(files):
                 if images.kind(e["raw"]) in ("pack", "raw32", "hvq"):
                     yield f"{d}/{f}", e["comp"]
+                    if images.kind(e["raw"]) == "hvq":
+                        yield f"{d}/{f - 1}", files[f - 1]["comp"]
         for b, files in enumerate(hvqfs.read(retail)):
             yield f"bg/{b}", b"".join(files[1:])
+        yield "anim", bytes(retail[hvqfs.ANIM_OFFSET:hvqfs.ANIM_END])
         for w in rw:
             yield w["name"], bytes(retail[w["pos"]:w["pos"] + w["len"]])
 
@@ -169,11 +180,12 @@ def main(argv):
 
     # where the images differ
     regions = [("header checksum", 0x10, 0x18),
-               ("picture decoder (ours, over the HVQ2 decoder) + entry jump", hvqfs.CODE_ROM, hvqfs.DECODE_ROM + 8),
+               ("picture decoder (ours, over the HVQ-MPS decoder; its setup call returns)", hvqfs.CODE_ROM, hvqfs.SETUP_ROM + 0x508),
                ("MainFS", mainfs.ROM_OFFSET, mainfs.ROM_END),
                ("backgrounds", hvqfs.ROM_OFFSET, hvqfs.ROM_END),
-               ("audio (samples, codebooks, loop states)", hvqfs.ROM_END, 0x1CED490),
-               ("tail (free in retail)", 0x1CED490, max(len(retail), len(clean)))]
+               ("animated board tiles", hvqfs.ANIM_OFFSET, hvqfs.ANIM_END),
+               ("audio (samples, codebooks, loop states)", hvqfs.ANIM_END, AUDIO_END),
+               ("tail (free in retail)", AUDIO_END, max(len(retail), len(clean)))]
     rows, stray = diff_map(retail, clean, regions)
     # inside audio only sample bytes, codebooks and loop states may differ
     allowed = np.zeros(len(retail), bool)
@@ -183,7 +195,7 @@ def main(argv):
             allowed[w["book"]["pos"] + 8:w["book"]["pos"] + 136] = True
         if w["loop"] and w["type"] == 0:
             allowed[w["loop"]["pos"] + 12:w["loop"]["pos"] + 44] = True
-    lo, hi = hvqfs.ROM_END, 0x1CED490
+    lo, hi = hvqfs.ANIM_END, AUDIO_END
     a, b = np.frombuffer(retail[lo:hi], np.uint8), np.frombuffer(clean[lo:hi], np.uint8)
     audio_stray = int(((a != b) & ~allowed[lo:hi]).sum())
     same_samples = sum(retail[w["pos"]:w["pos"] + w["len"]] == clean[w["pos"]:w["pos"] + w["len"]] for w in rw)
@@ -207,7 +219,7 @@ def main(argv):
               "Kept facts (not scanned): the program (boot, code, overlays: what the matching decomp builds; contains a "
               "1-bit 16x16 font `font0` in its data), text bank, model geometry and motion "
               f"({kept['form']} FORM files without their bitmaps and palettes, {kept['mtnx']} MTNX motions, "
-              f"{kept['other'] - len(images.GLYPH4)} other layout/path files incl. the 2-bit debug font 0/134), "
+              f"{kept['other'] - len(images.GLYPH4)} other layout/path files), "
               "background metadata (tile counts, camera), sequences, envelopes, key maps, loop points, effect tables."]
     failing = len(bad) + len(stray) + audio_stray + same_samples + same_images
     lines += ["", f"**{failing} failing.**"]

@@ -2,10 +2,10 @@
 and the practice pack for recording real takes.
 
     python -m games.marioparty2.voices build [name...]     # speak every line into games/marioparty2/voices/
-    python -m games.marioparty2.voices practice            # DIRTY: practice pack in D:/n64work/marioparty/practice
+    python -m games.marioparty2.voices practice            # DIRTY: practice pack in D:/n64work/mp2work/practice
                                                           # (needs voice_scan's clips; personal use, never published)
 
-Slots are named <table>_<sound>.wave in voice_lines.json ("t3_0_336.wave" = sound 336 of the first effect table).
+Slots are named <table>_<sound>.wave in voice_lines.json ("sbf_0_336.wave" = sound 336 of the first effect table).
 "_same" lists slots of the second table that hold the same line: they reuse the first one's performance.
 """
 import json
@@ -19,8 +19,8 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 os.environ.setdefault("CLEANROOM_GAME", HERE)
 from cleanroom.voice import voices as kit      # noqa: E402  (reads CLEANROOM_GAME at import)
 
-DIRTY = "D:/n64work/marioparty/dirty/snd"
-PRACTICE = "D:/n64work/marioparty/practice"
+DIRTY = "D:/n64work/mp2work/dirty/snd"
+PRACTICE = "D:/n64work/mp2work/practice"
 HZ = 22050
 
 
@@ -29,9 +29,9 @@ def _spec():
 
 
 def _slot(name):
-    """'t3_0_336.wave' -> spec key 't3_0/336'."""
+    """'sbf_0_336.wave' -> spec key 'sbf_0/336'."""
     stem = name[:-5]
-    return stem[:4] + "/" + stem[5:]
+    return stem[:5] + "/" + stem[6:]
 
 
 def _lines():
@@ -46,8 +46,8 @@ def build(only=None):
 
 
 def hook(key, d):
-    """Generator hook: int16 samples for a voice slot ('snd/t3_0/336'), else None."""
-    if not key.startswith("snd/t3_"):
+    """Generator hook: int16 samples for a voice slot ('snd/sbf_0/336'), else None."""
+    if not key.startswith("snd/sbf_"):
         return None
     stem = key[4:].replace("/", "_")
     lines, same = _lines()

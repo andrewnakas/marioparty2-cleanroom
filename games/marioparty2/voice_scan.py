@@ -2,7 +2,7 @@
 
     python -m games.marioparty2.voice_scan <retail rom> [whisper]
 
-Writes D:/n64work/marioparty/dirty/snd/<group>_<n>.wav and voice_scan.tsv next to them:
+Writes D:/n64work/mp2work/dirty/snd/<group>_<n>.wav and voice_scan.tsv next to them:
 name, seconds, rate, median f0, voiced share, harmonicity, what Whisper hears (with "whisper").
 The clips and the table stay in the dirty work dir (never the repo); they are for deciding which slots are
 character voices and for the practice pack.
@@ -16,7 +16,7 @@ import numpy as np
 
 from . import audio
 
-OUT = "D:/n64work/marioparty/dirty/snd"
+OUT = "D:/n64work/mp2work/dirty/snd"
 SPEC = os.path.join(os.path.dirname(os.path.abspath(__file__)), "spec", "samples.json")
 
 
@@ -31,7 +31,7 @@ def main(argv):
         model = WhisperModel("base.en", device="cpu", compute_type="int8")
     rows = []
     for w in audio.waves(rom):
-        if not w["name"].startswith("t3"):
+        if not w["name"].startswith("sbf"):
             continue
         pcm = audio.decode(rom, w)
         rate = w["rate"]
