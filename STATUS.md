@@ -56,15 +56,18 @@
 
 ## Headless testing notes
 - Start (Enter) skips Toad's entrance in Mario Land; two or three Start presses then A. Scripts in `look.py` syntax.
-- In silent scenes (Mario Land hub has no music) the emulated frame counter drops to ~1 frame/s in headless Edge,
-  for the dev build with retail pictures as well as the clean ROM (heartbeat now logs `frame=`), and core options
-  (FB emulation off, interpreter) do not change it. A-presses of 0.15 s get lost there, which made the clean ROM
-  look slow. Not yet checked in a real browser with sound on: if the hub feels slow there, tell me.
+- From the Mario Land hub on, the emulated frame counter (`frame=` in the heartbeat) advances about 1 per second in
+  headless Edge. Measured the same on the clean ROM, a no-voice dev build and the dev build with retail pictures
+  and sound; FB emulation off and the interpreter core do not change it; the anti-throttling browser flags are
+  already set. So it is not caused by the regenerated assets, but the cause is not found, and deep walks (board
+  turn, minigame) take many minutes headless. Not checked in a real browser: if the hub feels slow, tell me first.
+- Walked so far on the clean ROM: logos, title, Mario Land, Toad's dialogs, choosing Rules Land, the pipe.
+  The Rules Land board itself (dice, turns, HUD) was only seen on a dev build with retail pictures and sound.
 
 ## Next
 1. Walk a full game on the clean ROM: mode select, a real board turn, a minigame, results.
 2. Board backgrounds and the 89 minigame instruction pictures are a blur of the kept grid: draw paths / flat regions.
-3. Space icons, item icons, NPC portraits (0/92-132), intro arch signs (dir 14), mode badges in dir 9 (HARD/NORMAL/EASY,
+3. Space icons, framed item squares in dir 0, NPC portraits (0/92-132), intro arch signs (dir 14), mode badges in dir 9 (HARD/NORMAL/EASY,
    1P-4P/COM, BATTLE/TRIAL/DUEL), name plates 10/359-368.
 4. Palette sharing: splash sprites 0/48/p8-12 turn green because they share 16 colours with typeset digits.
 5. Voices: confirm speakers by ear; Yoshi and DK have no lines yet.
