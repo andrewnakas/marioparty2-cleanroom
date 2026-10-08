@@ -278,3 +278,6 @@ def fill(B, T, M1B, M1T, g):
                   "0/112/p0": 327, "0/113/p0": 328, "0/114/p0": 329, "0/115/p0": 334, "0/116/p0": "suit", "0/117/p0": 331}.items():
         if k in tex:
             B[k] = items[it]
+    # item briefs take their shape from the kept outline: copies without one (framed, opaque) keep the default
+    for k in [k for k, v in B.items() if any(v is it for it in items.values()) and "alpha2" not in tex[k]]:
+        del B[k]
