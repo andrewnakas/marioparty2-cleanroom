@@ -71,7 +71,8 @@ def _chunks(buf, start, size=1 << 21):
 
 
 def _without_pack_tables(clean):
-    """Copy of the clean image with the compressed header + entry table + tile map of every ImgPack blanked.
+    """Copy of the clean image with the compressed header + entry table + tile map of every ImgPack blanked,
+    and the kept-as-is files (motions, path tables, glyph metrics).
 
     Those sections are container layout (kept). Compressed, two packs with the same layout give the same LZ tokens,
     which would show up as a shared run although no pixel is involved."""
@@ -88,6 +89,14 @@ def _without_pack_tables(clean):
             if kind not in (1, 2) or size < 0x2C:
                 continue
             head, _ = mainfs.decompress(kind, clean, foff + 8, 0x20)
+            # kept facts stored as they are (motions, layout / path tables, glyph metrics): the same bytes as
+            # retail by design, listed below, so they are blanked here like the layout tables
+            k = images.kind(head + bytes(16)) if head[:4] in (b"MTNX", b"FORM") else "?"
+            if k == "mtnx" or (d, f) in images.GLYPH4 or (d == 10 and 64 <= f <= 80):
+                keep = images.GLYPH4.get((d, f), size)
+                _, used = mainfs.decompress(kind, clean, foff + 8, keep)
+                out[foff + 8:foff + 8 + used] = bytes(used)
+                continue
             if struct.unpack_from(">I", head, 0)[0] not in (0x20, 0x1B):
                 continue
             images_off = struct.unpack_from(">I", head, 8)[0]

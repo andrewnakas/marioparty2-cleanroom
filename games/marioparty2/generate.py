@@ -23,7 +23,10 @@ LEVELS = np.array([0, 85, 170, 255], np.float32)
 
 # Pictures whose default rendering still repeated a retail window run by chance (taint report feedback: one bit per
 # picture, no retail content): rendered with 8 levels per channel instead of 16.
-COARSE = {"8/14/p0", "31/15/p1"}
+COARSE = {"15/7/p0", "15/7/p1", "15/7/p2", "15/8/p1", "15/8/p2", "15/9/p1", "15/9/p2", "35/19/p1", "35/19/p2",
+          "35/20/p0", "35/20/p1", "35/20/p2"}
+# Same feedback for backgrounds: the lattice of these is shifted by a few levels (moves the 16-level steps).
+NUDGE = {19: 7, 21: 7}
 
 
 def _blur(a):
@@ -108,6 +111,8 @@ def background_tiles(b, d, hooks=()):
         return [b"HVQS" + hvqfs.crq_smooth(_lattice(t, tw, th, CELL), tw, th, CELL) for t in g]
     mosaic = g.reshape(ny, nx, 4, 4, 3)[::-1].transpose(0, 2, 1, 3, 4).reshape(ny * 4, nx * 4, 3)
     lat = _lattice(mosaic, nx * tw, ny * th, CELL)
+    if b in NUDGE:
+        lat = np.clip(lat.astype(np.int16) + NUDGE[b], 0, 255).astype(np.uint8)
     sx, sy = tw >> CELL, th >> CELL
     out = []
     for k in range(n):
