@@ -67,7 +67,7 @@
 ## Next
 1. Walk a full game on the clean ROM: mode select, a real board turn, a minigame, results.
 2. Board backgrounds and the 89 minigame instruction pictures are a blur of the kept grid: draw paths / flat regions.
-3. Space icons, framed item squares in dir 0, NPC portraits (0/92-132), intro arch signs (dir 14), mode badges in dir 9 (HARD/NORMAL/EASY,
+3. Opaque space-icon and item squares (no kept outline), NPC portraits (0/92-132), intro arch signs (dir 14), mode badges in dir 9 (HARD/NORMAL/EASY,
    1P-4P/COM, BATTLE/TRIAL/DUEL), name plates 10/359-368.
 4. Palette sharing: splash sprites 0/48/p8-12 turn green because they share 16 colours with typeset digits.
 5. Voices: confirm speakers by ear; Yoshi and DK have no lines yet.

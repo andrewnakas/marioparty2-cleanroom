@@ -283,3 +283,28 @@ def fill(B, T, M1B, M1T, g):
         del B[k]
     for f in range(107, 118):          # dir 0 copies are framed squares: default rendering for now
         B.pop(f"0/{f}/p0", None)
+    # ---- board space icons (dir 10): a disc in the space's colour with its sign
+    def disc(col, *ops, text=None):
+        lite = [min(255, int(v * 0.5 + 140)) for v in col]
+        b = brief(col, E((0.4, 0.36), (0.26, 0.2), c=lite), *ops, {"outline": 1, "c": [255, 255, 255]})
+        if text:
+            b = over(b, text, [255, 255, 255], [255, 255, 255], [int(v * 0.35) for v in col], (0.24, 0.16, 0.76, 0.84), th=1.6)
+        return b
+    green, blue, redc, goldc = [30, 170, 50], [30, 110, 240], [230, 50, 50], [240, 180, 20]
+    bolt = P([(0.58, 0.14), (0.3, 0.54), (0.48, 0.54), (0.4, 0.86), (0.72, 0.44), (0.52, 0.44)], [255, 255, 255])
+    box = [R(0.28, 0.34, 0.72, 0.72, [255, 255, 255]), R(0.28, 0.46, 0.72, 0.5, green), R(0.46, 0.4, 0.54, 0.6, green)]
+    bowser = [P([(0.2, 0.2), (0.36, 0.36), (0.26, 0.46)], [255, 255, 255]), P([(0.8, 0.2), (0.64, 0.36), (0.74, 0.46)], [255, 255, 255]),
+              E((0.38, 0.5), (0.07, 0.06), c=[255, 255, 255]), E((0.62, 0.5), (0.07, 0.06), c=[255, 255, 255]),
+              P([(0.3, 0.66), (0.7, 0.66), (0.6, 0.8), (0.4, 0.8)], [255, 255, 255])]
+    star5 = P(g["star_pts"](0.5, 0.52, 0.3), [255, 240, 80])
+    kinds = {"bolt": disc(green, bolt), "q": disc(green, text="?"), "ex": disc(green, text="!"), "item": disc(green, *box),
+             "bank": disc(green, text="B"), "bowser": disc([200, 30, 30], *bowser), "blue": disc(blue), "red": disc(redc),
+             "bstar": disc(blue, star5), "bex": disc(blue, text="!"), "G": disc(goldc, text="G"), "M": disc(goldc, text="M"),
+             "orange": disc([250, 170, 40]), "purple": disc([190, 60, 220]), "S": disc(green, text="S")}
+    for k, kind in {"53/r": "bolt", "54/r": "S", "55/r": "item", "58/r": "bank", "59/r": "bowser", "60/r": "ex", "61/r": "orange",
+                    "62/r": "purple", "281/p0": "G", "282/p0": "M", "283/p0": "red", "284/p0": "blue", "285/p0": "q",
+                    "286/p0": "bstar", "287/p0": "bex", "289/p0": "bowser", "298/p0": "blue", "299/p0": "red", "300/p0": "bolt",
+                    "301/p0": "q", "302/p0": "item", "304/p0": "bank", "305/p0": "bowser", "315/p0": "blue", "316/p0": "red",
+                    "317/p0": "q", "318/p0": "ex", "319/p0": "bowser", "320/p0": "bolt", "321/p0": "item", "322/p0": "bank"}.items():
+        if f"10/{k}" in tex and "alpha2" in tex[f"10/{k}"]:
+            B[f"10/{k}"] = kinds[kind]
