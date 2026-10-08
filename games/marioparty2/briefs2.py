@@ -281,3 +281,5 @@ def fill(B, T, M1B, M1T, g):
     # item briefs take their shape from the kept outline: copies without one (framed, opaque) keep the default
     for k in [k for k, v in B.items() if any(v is it for it in items.values()) and "alpha2" not in tex[k]]:
         del B[k]
+    for f in range(107, 118):          # dir 0 copies are framed squares: default rendering for now
+        B.pop(f"0/{f}/p0", None)
