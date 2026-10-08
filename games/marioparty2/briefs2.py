@@ -215,3 +215,66 @@ def fill(B, T, M1B, M1T, g):
         T.pop(key, None)
         if key in tex:
             B[key] = badge(text, col, th)
+    # ---- item icons: drawn once, given to every copy (any size, any directory) whose colour grid is close to
+    # the copy named here (read off the dir 10 contact sheet)
+    R, L, K_, W_ = g["R"], g["L"], [14, 10, 12], [252, 252, 252]
+    cream, gold_ = [246, 232, 200], [250, 200, 30]
+
+    def shroom(cap, spot):
+        return brief(cream, E((0.5, 0.4), (0.5, 0.36), c=cap), R(0, 0, 1, 0.3, cap), E((0.5, 0.2), (0.16, 0.13), c=spot),
+                     E((0.14, 0.42), (0.1, 0.12), c=spot), E((0.86, 0.42), (0.1, 0.12), c=spot),
+                     E((0.4, 0.78), (0.035, 0.07), c=K_), E((0.6, 0.78), (0.035, 0.07), c=K_), {"outline": 1, "c": K_})
+    items = {
+        323: shroom([226, 30, 30], W_),
+        333: shroom([250, 200, 20], [255, 244, 170]),
+        324: brief(gold_, E((0.5, 0.26), (0.1, 0.1), c=[120, 80, 0]), L([(0.5, 0.45), (0.5, 0.95)], 0.05, [200, 140, 0]),
+                   {"outline": 1, "c": [120, 80, 0]}),
+        326: brief([150, 84, 30], R(0, 0, 1, 0.42, [196, 120, 50]), R(0, 0.4, 1, 0.5, gold_), R(0.42, 0.36, 0.58, 0.62, gold_),
+                   E((0.5, 0.5), (0.04, 0.05), c=K_), {"outline": 1, "c": [70, 36, 10]}),
+        327: brief([30, 70, 40], E((0.38, 0.4), (0.12, 0.1), c=[90, 150, 100]), P([(0.3, 0.5), (0.7, 0.5), (0.5, 0.8)], [200, 30, 30]),
+                   E((0.36, 0.56), (0.06, 0.05), c=W_), E((0.64, 0.56), (0.06, 0.05), c=W_), {"outline": 1, "c": K_}),
+        328: brief(W_, L([(0.3, 0.2), (0.3, 0.6)], 0.03, [150, 150, 170]), L([(0.5, 0.15), (0.5, 0.6)], 0.03, [150, 150, 170]),
+                   L([(0.7, 0.2), (0.7, 0.6)], 0.03, [150, 150, 170]), R(0.2, 0.82, 0.8, 1, [200, 200, 220]), {"outline": 1, "c": [90, 90, 120]}),
+        331: brief(gold_, E((0.45, 0.55), (0.2, 0.1), c=[255, 240, 140]), L([(0.2, 0.8), (0.8, 0.8)], 0.05, [190, 130, 0]),
+                   {"outline": 1, "c": [120, 80, 0]}),
+        334: brief([170, 110, 230], E((0.4, 0.4), (0.1, 0.16), c=[220, 180, 255]), R(0, 0.78, 1, 0.9, [110, 60, 180]),
+                   E((0.5, 0.94), (0.08, 0.06), c=gold_), {"outline": 1, "c": [60, 20, 110]}),
+        329: over(brief([240, 240, 250], R(0, 0, 0.5, 0.5, [250, 90, 90]), R(0.5, 0, 1, 0.5, [250, 220, 60]), R(0, 0.5, 0.5, 1, [90, 200, 110]),
+                        R(0.5, 0.5, 1, 1, [90, 140, 250]), {"outline": 1, "c": [60, 60, 90]}), "?", W_, W_, [40, 40, 80], (0.2, 0.14, 0.8, 0.86), th=2.2),
+    }
+    refs = {f: np.asarray(tex[f"10/{f}/p0"]["grid"], np.float32) for f in items if f"10/{f}/p0" in tex}
+    n_items = 0
+    for k, t in tex.items():
+        if k in B or k in T or t["mode"] not in ("rgba", "rgba1") or "alpha2" not in t or not 24 <= t["w"] <= 48                 or t["w"] != t["h"] or int(k.split("/")[0]) not in (0, 10, 17, 18, 19, 20):
+            continue
+        v = np.asarray(t["grid"], np.float32)
+        # compare colours only where both are solid (some copies sit on black, some on nothing)
+        best = None
+        for f, ref in refs.items():
+            if v.shape != ref.shape:
+                continue
+            m = (v[:, 3] > 128) & (ref[:, 3] > 128)
+            if m.sum() >= 6:
+                dist = float(np.abs(v[m, :3] - ref[m, :3]).mean())
+                if best is None or dist < best[0]:
+                    best = (dist, f)
+        if best and best[0] < 30:
+            B[k] = items[best[1]]
+            n_items += 1
+    g["_N_ITEMS"] = n_items
+    # the same ten items by their fixed order in the item packs (mushroom, key, chest, bomb, glove, warp block,
+    # golden mushroom, bell, Bowser suit, lamp)
+    items["suit"] = brief([40, 160, 60], P([(0.05, 0.05), (0.3, 0.3), (0.12, 0.45)], [250, 220, 120]), P([(0.95, 0.05), (0.7, 0.3), (0.88, 0.45)], [250, 220, 120]),
+                          P([(0.25, 0.3), (0.5, 0.45), (0.75, 0.3), (0.5, 0.2)], [226, 40, 30]), E((0.36, 0.5), (0.09, 0.07), c=W_), E((0.64, 0.5), (0.09, 0.07), c=W_),
+                          E((0.5, 0.8), (0.3, 0.16), c=[250, 210, 120]), {"outline": 1, "c": K_})
+    order = [323, 324, 326, 327, 328, 329, 333, 334, "suit", 331]
+    for i, it in enumerate(order):
+        for k in (f"17/9/p{i}", f"17/10/p{i}", f"17/14/p{i}", f"18/7/p{i}", f"19/{5 + i}/b7"):
+            if k in tex:
+                B[k] = items[it]
+    for k, it in {"20/9/p0": 323, "20/10/p0": 324, "20/12/p0": 326, "20/13/p0": 327, "20/14/p0": 328, "20/15/p0": 329, "20/16/p0": 333,
+                  "20/17/p0": 334, "20/18/p0": "suit", "20/19/p0": 331, "10/330/p0": "suit", "10/332/p0": 323, "10/335/p0": 327,
+                  "10/336/p0": 328, "10/337/p0": "suit", "0/107/p0": 324, "0/109/p0": 323, "0/110/p0": 333, "0/111/p0": 326,
+                  "0/112/p0": 327, "0/113/p0": 328, "0/114/p0": 329, "0/115/p0": 334, "0/116/p0": "suit", "0/117/p0": 331}.items():
+        if k in tex:
+            B[k] = items[it]
