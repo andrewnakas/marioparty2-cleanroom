@@ -65,5 +65,151 @@
    }
   }
  },
- "_same": {}
+ "_same": {
+  "sbf_1_131": "sbf_0_95",
+  "sbf_1_132": "sbf_0_96",
+  "sbf_1_133": "sbf_0_97",
+  "sbf_1_162": "sbf_0_126",
+  "sbf_1_164": "sbf_0_128",
+  "sbf_1_134": "sbf_0_98",
+  "sbf_1_135": "sbf_0_99",
+  "sbf_1_137": "sbf_0_101",
+  "sbf_1_136": "sbf_0_100",
+  "sbf_1_138": "sbf_0_102",
+  "sbf_1_140": "sbf_0_104",
+  "sbf_1_141": "sbf_0_105",
+  "sbf_1_142": "sbf_0_106",
+  "sbf_1_149": "sbf_0_113",
+  "sbf_1_151": "sbf_0_115",
+  "sbf_1_152": "sbf_0_116",
+  "sbf_1_153": "sbf_0_117"
+ },
+ "sbf_0_73.wave": {
+  "who": "announcer",
+  "text": "Start!"
+ },
+ "sbf_0_74.wave": {
+  "who": "announcer",
+  "text": "Ready?"
+ },
+ "sbf_0_75.wave": {
+  "who": "announcer",
+  "text": "Go!",
+  "guess": true
+ },
+ "sbf_0_76.wave": {
+  "who": "announcer",
+  "text": "New record!"
+ },
+ "sbf_0_77.wave": {
+  "who": "announcer",
+  "text": "Goal!"
+ },
+ "sbf_0_78.wave": {
+  "who": "announcer",
+  "text": "Time up!"
+ },
+ "sbf_0_79.wave": {
+  "who": "announcer",
+  "text": "Finish!"
+ },
+ "sbf_0_80.wave": {
+  "who": "announcer",
+  "text": "Miss!",
+  "guess": true
+ },
+ "sbf_0_81.wave": {
+  "who": "announcer",
+  "text": "Draw!"
+ },
+ "sbf_0_93.wave": {
+  "who": "announcer",
+  "text": "Chance time!",
+  "guess": true
+ },
+ "sbf_0_94.wave": {
+  "who": "announcer",
+  "text": "Chance time!",
+  "guess": true
+ },
+ "sbf_0_95.wave": {
+  "who": "mario",
+  "text": "Yippee! Aha! Ha ha!",
+  "guess": true
+ },
+ "sbf_0_96.wave": {
+  "who": "mario",
+  "text": "Oh, no!",
+  "guess": true
+ },
+ "sbf_0_97.wave": {
+  "who": "mario",
+  "text": "Woohoo!",
+  "guess": true
+ },
+ "sbf_0_126.wave": {
+  "who": "mario",
+  "text": "Yahoo!",
+  "guess": true
+ },
+ "sbf_0_128.wave": {
+  "who": "mario",
+  "text": "Okay!",
+  "guess": true
+ },
+ "sbf_0_98.wave": {
+  "who": "luigi",
+  "text": "He he, I got it!",
+  "guess": true
+ },
+ "sbf_0_99.wave": {
+  "who": "luigi",
+  "text": "Ha ha ha ha!",
+  "guess": true
+ },
+ "sbf_0_101.wave": {
+  "who": "luigi",
+  "text": "Oh...",
+  "guess": true
+ },
+ "sbf_0_100.wave": {
+  "who": "peach",
+  "text": "Yoo-hoo!",
+  "guess": true
+ },
+ "sbf_0_102.wave": {
+  "who": "peach",
+  "text": "Yeah! I'm the best!",
+  "guess": true
+ },
+ "sbf_0_104.wave": {
+  "who": "peach",
+  "text": "Yeah!",
+  "guess": true
+ },
+ "sbf_0_105.wave": {
+  "who": "peach",
+  "text": "Oh no!",
+  "guess": true
+ },
+ "sbf_0_106.wave": {
+  "who": "peach",
+  "text": "Yeah! Peach's got it!"
+ },
+ "sbf_0_113.wave": {
+  "who": "wario",
+  "text": "No! No! No! No!"
+ },
+ "sbf_0_115.wave": {
+  "who": "wario",
+  "text": "Ha ha ha ha!"
+ },
+ "sbf_0_116.wave": {
+  "who": "wario",
+  "text": "D'oh, I missed!"
+ },
+ "sbf_0_117.wave": {
+  "who": "wario",
+  "text": "Wario's gonna win!"
+ }
 }

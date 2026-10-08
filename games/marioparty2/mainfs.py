@@ -31,9 +31,9 @@ def decompress(kind, data, pos, size):
     # the decoder may read a little past the end of the stream: hand it a bounded copy
     src = bytes(data[pos:pos + size * 2 + 64]) + bytes(8)
     fn = {1: _dll.mp_dec1, 2: _dll.mp_dec2, 3: _dll.mp_dec2, 4: _dll.mp_dec2, 5: _dll.mp_dec5}[kind]
-    if kind == 2:            # "slide": the stream starts with the decoded size again
-        assert struct.unpack_from(">I", src, 0)[0] == size
-        return out.raw[:size] if fn(src[4:], out, size) else b"", fn(src[4:], out, size) + 4
+    if kind == 2:            # "slide": the stream starts with the decoded size again (size may be a prefix here)
+        used = fn(src[4:], out, size)
+        return out.raw[:size], used + 4
     used = fn(src, out, size)
     return out.raw[:size], used
 
