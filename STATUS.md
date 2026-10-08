@@ -8,6 +8,8 @@
 - **Taint: 0 failing** (`TAINT.md`): textures, pictures, samples, raw image, plus a map of every differing byte.
 - Checked headless (muted): clean ROM boots, logos, title, Mario Land. Rules Land board (dice, turns, HUD) was
   walked on a dev build with retail backgrounds; audio level over a scripted run follows the retail pattern.
+- Also painted since the first publish: mode / difficulty badges, item icons and board space icons (the copies that
+  keep an outline), title cover sprites.
 - Painted / typeset: six players' faces (near + far models, 17 expressions), HUD + menu portraits (MP1 busts),
   fonts, digits, names, ranks, COM, dice faces, START/FINISH/TIME UP/GOAL/DRAW/MISS/CLEAR/GAME OVER/PAUSE,
   mode and menu labels, land logos, button icons, title logo and land signs inside backgrounds (`scenes2.py`).
@@ -49,6 +51,8 @@
   contact sheet), `voice_scan.py`.
 
 ## Taint notes
+- The scan needs a few GB of RAM; twice it died with MemoryError while other agents were building. The index merge
+  is now sort-based (`taint._uniq`). `publish.sh` refuses to push unless the report says 0 failing.
 - 12 textures render with 8 levels (`generate.COARSE`) and backgrounds 19 and 21 have a shifted lattice
   (`generate.NUDGE`): each had one chance run of 33-46 B at 16 levels.
 - The raw scan blanks files kept as they are (motions, path tables 10/64-80, glyph metrics) like the pack layout
