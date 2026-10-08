@@ -5,11 +5,11 @@
 #   sh tools/publish.sh push "msg" same, then push the site to gh-pages
 #   SKIP_BUILD=1 sh tools/publish.sh ...   reuse the ROM and taint report already in the build dir
 set -e
-W=/d/n64work/marioparty
-RETAIL="$W/rom/Mario Party 2 (USA).z64"
-ROM=$W/build/marioparty.z64
+W=/d/n64work/mp2work
+RETAIL="$W/rom/mp2.z64"
+ROM=$W/build/marioparty2.z64
 SITE=$W/site
-cd /d/n64work/marioparty-cleanroom
+cd /d/n64work/marioparty2-cleanroom
 if [ -z "$SKIP_BUILD" ]; then
     python -m games.marioparty2.generate "$RETAIL" $ROM | cut -c1-240
     python -m games.marioparty2.taint "$RETAIL" $ROM TAINT.md | tee $W/build/taint.txt
@@ -21,7 +21,7 @@ python ports/ejs/patch_core.py $ROM $W/devsite/cores_orig $W/devsite/data/cores 
 python ports/ejs/make_site.py $ROM $W/devsite $SITE
 [ "$1" = push ] || exit 0
 cd $SITE
-[ -d .git ] || { git init -q && git remote add origin https://github.com/andrewnakas/marioparty-cleanroom.git; }
+[ -d .git ] || { git init -q && git remote add origin https://github.com/andrewnakas/marioparty2-cleanroom.git; }
 git config user.name andre && git config user.email treesixtyweather@gmail.com && git config http.postBuffer 157286400
 # one orphan commit per deploy: the Pages builder chokes on a long history of 32 MB ROMs
 git checkout -q --orphan tmp && git add -A && git commit -qm "Site: ${2:-rebuild}" \
