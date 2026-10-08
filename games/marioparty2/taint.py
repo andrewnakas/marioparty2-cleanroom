@@ -35,6 +35,18 @@ def _rgba(px):
     return out.tobytes()
 
 
+def _uniq(parts):
+    """Sorted unique of uint64 arrays, in place (np.unique's hash table needs several times the memory)."""
+    a = np.concatenate(parts)
+    a.sort()
+    if len(a) < 2:
+        return a
+    keep = np.empty(len(a), bool)
+    keep[0] = True
+    np.not_equal(a[1:], a[:-1], out=keep[1:])
+    return a[keep]
+
+
 def _index(streams, flush=6_000_000):
     """taint.build_index with bounded memory: unique-merge every few million windows."""
     acc, pend, npend = np.zeros(0, np.uint64), [], 0
@@ -43,8 +55,8 @@ def _index(streams, flush=6_000_000):
         pend.append(h[~per])
         npend += len(pend[-1])
         if npend > flush:
-            acc, pend, npend = np.unique(np.concatenate([acc] + pend)), [], 0
-    return np.unique(np.concatenate([acc] + pend))
+            acc, pend, npend = _uniq([acc] + pend), [], 0
+    return _uniq([acc] + pend)
 
 
 def _image_streams(dirs):
