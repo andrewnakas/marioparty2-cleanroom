@@ -1,0 +1,11 @@
+__pycache__/
+*.pyc
+*.z64
+*.n64
+*.v64
+*.zip
+baserom*
+games/marioparty2/native/*.pdb
+games/marioparty2/native/*.lib
+games/marioparty2/voices/_raw/
+start.cmd

@@ -1,0 +1,69 @@
+{
+ "_doc": "Spoken lines for the voice slots in the sound-effect tables (words as heard by a speech recogniser in the dirty room, tidied by hand). who = which voice performs it; 'guess' marks slots whose speaker was inferred from pitch and wording only. Placeholders are Piper TTS; real takes come from the practice pack.",
+ "_characters": {
+  "announcer": {
+   "tts": {
+    "model": "en_US-ryan-high",
+    "semitones": 2.0,
+    "length": 0.95
+   }
+  },
+  "mario": {
+   "tts": {
+    "model": "en_US-joe-medium",
+    "semitones": 5.0,
+    "length": 1.0
+   }
+  },
+  "luigi": {
+   "tts": {
+    "model": "en_US-ryan-high",
+    "semitones": 4.0,
+    "length": 1.0
+   }
+  },
+  "peach": {
+   "tts": {
+    "model": "en_US-amy-medium",
+    "semitones": 3.0,
+    "length": 1.0
+   }
+  },
+  "yoshi": {
+   "tts": {
+    "model": "en_US-kristin-medium",
+    "semitones": 7.0,
+    "length": 0.9
+   }
+  },
+  "wario": {
+   "tts": {
+    "model": "en_US-joe-medium",
+    "semitones": -3.0,
+    "length": 1.05
+   }
+  },
+  "dk": {
+   "tts": {
+    "model": "en_US-ryan-high",
+    "semitones": -7.0,
+    "length": 1.1
+   }
+  },
+  "bowser": {
+   "tts": {
+    "model": "en_US-ryan-high",
+    "semitones": -9.0,
+    "length": 1.15
+   }
+  },
+  "toad": {
+   "tts": {
+    "model": "en_US-hfc_female-medium",
+    "semitones": 5.0,
+    "length": 0.95
+   }
+  }
+ },
+ "_same": {}
+}
