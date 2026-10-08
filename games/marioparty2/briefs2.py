@@ -188,3 +188,14 @@ def fill(B, T, M1B, M1T, g):
     for i, tri in {2: [(0.5, 0.22), (0.8, 0.74), (0.2, 0.74)], 3: [(0.8, 0.5), (0.26, 0.8), (0.26, 0.2)],
                    4: [(0.2, 0.5), (0.74, 0.2), (0.74, 0.8)], 5: [(0.5, 0.78), (0.2, 0.26), (0.8, 0.26)]}.items():
         B[f"0/91/p{i}"] = brief([0, 0, 0], E((0.5, 0.5), (0.5, 0.5), c=[250, 190, 0]), P(tri, [120, 60, 0]), {"outline": 1, "c": [255, 255, 255]})
+    # ---- title screen: two sprites can cover the logo and the copyright line with the plain scene behind them
+    # (seen on the contact sheet): they are cut from our own smooth title picture, without the lettering.
+    def _title_crop(x0, y0):
+        def paint(w, h, d, alpha):
+            from . import scenes2
+            pic = json.load(open(os.path.join(HERE, "spec", "pictures.json")))["bg"][62]
+            rgb = (np.clip(scenes2.smooth(pic), 0, 255).astype(np.uint8) >> 4) * 17
+            return np.dstack([rgb, np.full(rgb.shape[:2], 255, np.uint8)])[y0:y0 + h, x0:x0 + w].copy()
+        return paint
+    B["14/27/p0"] = _title_crop(42, 28)
+    B["14/28/p0"] = _title_crop(60, 194)
