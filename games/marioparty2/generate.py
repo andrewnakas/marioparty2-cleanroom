@@ -279,6 +279,7 @@ def build(retail, hooks=()):
 
 def main(argv):
     retail = open(argv[1], "rb").read()
+    os.environ["MP2_ROM"] = os.path.abspath(argv[1])       # scenes2 reads the board layouts (kept facts) from it
     assert hashlib.sha1(retail).hexdigest() == romtool.RETAIL_SHA1, "not the USA ROM the tools were written for"
     from . import scenes2, voices
     hooks = (briefs.paint, scenes2.hook, voices.hook)

@@ -8,7 +8,9 @@ The default picture is the kept colour grid, smooth; the lettering a sign carrie
 import numpy as np
 from PIL import Image
 
-from . import briefs
+import os
+
+from . import boards2, briefs
 
 WHITE = ([255, 255, 255], [236, 236, 240], [10, 10, 20])
 GOLD = ([255, 244, 120], [240, 150, 0], [90, 30, 0])
@@ -39,10 +41,36 @@ def smooth(d):
     return np.asarray(Image.fromarray(mosaic).resize((nx * tw, ny * th), Image.BICUBIC), np.float32)
 
 
+_FACTS = {}
+
+
+def _facts():
+    """Kept layout facts the drawings need: board definition files and background cameras (read from the
+    clean tree's own inputs: the retail image supplies them as structure, like every container layout)."""
+    if not _FACTS:
+        import hashlib
+        from . import hvqfs, mainfs, romtool
+        rom = open(os.environ.get("MP2_ROM", "D:/n64work/mp2work/rom/mp2.z64"), "rb").read()
+        assert hashlib.sha1(rom).hexdigest() == romtool.RETAIL_SHA1
+        _FACTS["boards"] = {f: e["raw"] for f, e in enumerate(mainfs.read(rom)[10]) if f in (64, 65, 66, 67, 68, 69, 80)}
+        _FACTS["meta"] = [files[0] for files in hvqfs.read(rom)]
+    return _FACTS
+
+
 def hook(key, d):
-    if not key.startswith("bg/") or int(key[3:]) not in SIGNS or d["tiles"] != d["nx"] * d["ny"]:
+    if not key.startswith("bg/") or d["tiles"] != d["nx"] * d["ny"]:
+        return None
+    b = int(key[3:])
+    if b not in SIGNS and b not in boards2.BG_BOARD:
         return None
     im = smooth(d)
+    if b in boards2.BG_BOARD:
+        name, style = boards2.BG_BOARD[b]
+        f = _facts()
+        im = boards2.draw(im, f["boards"][boards2.BOARDS[name][0]], f["meta"][b], style)
+    if b not in SIGNS:
+        rgb = (np.clip(im, 0, 255).astype(np.uint8) >> 4) * 17
+        return np.dstack([rgb, np.full(rgb.shape[:2], 255, np.uint8)])
     H, W = im.shape[:2]
     for text, (x0, y0, x1, y1), (top, bottom, edge), opt in SIGNS[int(key[3:])]:
         px, py, w, h = int(x0 * W), int(y0 * H), int((x1 - x0) * W), int((y1 - y0) * H)
@@ -58,7 +86,8 @@ if __name__ == "__main__":
     import os
     import sys
     pic = json.load(open(os.path.join(os.path.dirname(os.path.abspath(__file__)), "spec", "pictures.json")))
-    ims = [Image.fromarray(hook(f"bg/{b}", pic["bg"][b])).convert("RGB") for b in sorted(SIGNS)]
+    sel = [int(x) for x in sys.argv[2].split(",")] if len(sys.argv) > 2 else sorted(SIGNS)
+    ims = [Image.fromarray(hook(f"bg/{b}", pic["bg"][b])).convert("RGB").resize((320, 240)) for b in sel]
     sheet = Image.new("RGB", (4 * 322, ((len(ims) + 3) // 4) * 242))
     for i, im in enumerate(ims):
         sheet.paste(im, ((i % 4) * 322, (i // 4) * 242))
