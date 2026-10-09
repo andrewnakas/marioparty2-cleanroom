@@ -11,7 +11,7 @@ import struct
 import numpy as np
 
 # board name -> (board definition file in dir 10, background index)
-BOARDS = {"western": (64, 2), "pirate": (65, 10), "horror": (66, 21), "space": (67, 24), "mystery": (68, 16),
+BOARDS = {"western": (64, 2), "pirate": (65, 10), "horror": (66, 21), "space": (67, 24), "mystery": (68, 30),
           "bowser": (69, 37), "rules": (80, 43)}
 # space type ids (PartyPlanner64 MP2 adapter): 1 blue, 2 red, 4 happening, 5 chance, 6 item, 7 bank, 9 battle,
 # 12 Bowser, 14 star; 0/3/8/16/17 are invisible markers (start, Toad, Baby Bowser, path points)
@@ -61,7 +61,7 @@ def project(m, pts):
 
 # background -> (board, style): "board" = full painted board, "map" = the small route map
 BG_BOARD = {2: ("western", "board"), 10: ("pirate", "board"), 21: ("horror", "board"), 24: ("space", "board"),
-            16: ("mystery", "board"), 37: ("bowser", "board"),
+            16: ("horror", "board"), 30: ("mystery", "board"), 37: ("bowser", "board"),
             8: ("western", "map"), 15: ("pirate", "map"), 22: ("horror", "map"), 23: ("horror", "map"),
             29: ("space", "map"), 35: ("mystery", "map"), 42: ("bowser", "map")}
 
