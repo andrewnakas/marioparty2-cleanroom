@@ -24,14 +24,20 @@ from cleanroom.audio import descriptor, vadpcm
 from cleanroom.audio.pitch import median_f0
 
 
-def grid(rgba, n):
+def grid(rgba, n, weighted=False):
+    """n x n cell means. weighted: colour averaged over the visible pixels only (alpha-weighted), so the colour
+    stored under transparent pixels does not leak into the edges of sprites; alpha stays the plain mean."""
     h, w = rgba.shape[:2]
     out = []
     for gy in range(n):
         for gx in range(n):
             y0, y1 = gy * h // n, max(gy * h // n + 1, (gy + 1) * h // n)
             x0, x1 = gx * w // n, max(gx * w // n + 1, (gx + 1) * w // n)
-            out.append([int(round(v)) for v in rgba[y0:y1, x0:x1].reshape(-1, 4).mean(0)])
+            c = rgba[y0:y1, x0:x1].reshape(-1, 4).astype(np.float64)
+            m = c.mean(0)
+            if weighted and c[:, 3].sum() > 0:
+                m[:3] = (c[:, :3] * c[:, 3:]).sum(0) / c[:, 3].sum()
+            out.append([int(round(v)) for v in m])
     return out
 
 

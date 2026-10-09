@@ -19,7 +19,7 @@ SPEC = os.path.join(os.path.dirname(os.path.abspath(__file__)), "spec")
 
 def fact(im):
     n = 16 if max(im.w, im.h) >= 128 else 4
-    d = {"w": im.w, "h": im.h, "mode": im.mode, "grid": S.grid(im.rgba, n)}
+    d = {"w": im.w, "h": im.h, "mode": im.mode, "grid": S.grid(im.rgba, n, weighted=True)}
     a = im.rgba[..., 3]
     if im.mode in ("i", "ia") or (a < 250).any():
         d["alpha2"] = S.alpha2(a)
