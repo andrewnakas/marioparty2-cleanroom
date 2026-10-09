@@ -281,8 +281,6 @@ def fill(B, T, M1B, M1T, g):
     # item briefs take their shape from the kept outline: copies without one (framed, opaque) keep the default
     for k in [k for k, v in B.items() if any(v is it for it in items.values()) and "alpha2" not in tex[k]]:
         del B[k]
-    for f in range(107, 118):          # dir 0 copies are framed squares: default rendering for now
-        B.pop(f"0/{f}/p0", None)
     # ---- board space icons (dir 10): a disc in the space's colour with its sign
     def disc(col, *ops, text=None):
         lite = [min(255, int(v * 0.5 + 140)) for v in col]
@@ -308,3 +306,15 @@ def fill(B, T, M1B, M1T, g):
                     "317/p0": "q", "318/p0": "ex", "319/p0": "bowser", "320/p0": "bolt", "321/p0": "item", "322/p0": "bank"}.items():
         if f"10/{k}" in tex and "alpha2" in tex[f"10/{k}"]:
             B[f"10/{k}"] = kinds[kind]
+    # ---- framed portraits (dir 0, 40x40): hosts, Bowser costumes, enemies; framed item squares
+    from . import portraits2
+    for f in portraits2.PAINTERS:
+        if f"0/{f}/p0" in tex:
+            B[f"0/{f}/p0"] = portraits2.portrait(f)
+    for f, it in {107: 324, 108: 325, 109: 323, 110: 333, 111: 326, 112: 327, 113: 328, 114: 329, 115: 334,
+                  116: "suit", 117: 331, 118: 324, 119: 325}.items():
+        if it == 325:
+            items[325] = brief([230, 30, 30], P([(0.1, 0.3), (0.6, 0.3), (0.6, 0.12), (0.92, 0.5), (0.6, 0.88), (0.6, 0.7), (0.1, 0.7)],
+                                                 [250, 250, 250]), {"outline": 1, "c": [120, 0, 0]})
+        if f"0/{f}/p0" in tex:
+            B[f"0/{f}/p0"] = portraits2.framed_item(items[it])
