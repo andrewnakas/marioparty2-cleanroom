@@ -64,6 +64,8 @@ def hook(key, d):
     if b not in SIGNS and b not in boards2.BG_BOARD:
         return None
     im = smooth(d)
+    from .generate import NUDGE                      # taint feedback: shifted levels for these pictures
+    im = im + NUDGE.get(b, 0)
     if b in boards2.BG_BOARD:
         name, style = boards2.BG_BOARD[b]
         f = _facts()

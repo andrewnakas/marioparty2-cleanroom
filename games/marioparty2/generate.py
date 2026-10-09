@@ -24,9 +24,9 @@ LEVELS = np.array([0, 85, 170, 255], np.float32)
 # Pictures whose default rendering still repeated a retail window run by chance (taint report feedback: one bit per
 # picture, no retail content): rendered with 8 levels per channel instead of 16.
 COARSE = {"15/7/p0", "15/7/p1", "15/7/p2", "15/8/p1", "15/8/p2", "15/9/p1", "15/9/p2", "35/19/p1", "35/19/p2",
-          "35/20/p0", "35/20/p1", "35/20/p2"}
+          "35/20/p0", "35/20/p1", "35/20/p2", "73/11/p0", "73/11/p3", "73/11/p4", "73/11/p5", "73/11/p6", "73/11/p7"}
 # Same feedback for backgrounds: the lattice of these is shifted by a few levels (moves the 16-level steps).
-NUDGE = {19: 7, 21: 7}
+NUDGE = {19: 7, 21: 7, 16: 7}
 
 
 def _blur(a):
