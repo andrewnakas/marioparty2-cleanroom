@@ -8,6 +8,16 @@
 - **Taint: 0 failing** (`TAINT.md`): textures, pictures, samples, raw image, plus a map of every differing byte.
 - Checked headless (muted): clean ROM boots, logos, title, Mario Land. Rules Land board (dice, turns, HUD) was
   walked on a dev build with retail backgrounds; audio level over a scripted run follows the retail pattern.
+- Rough-spot pass (after the first morning look): board backgrounds now carry their paths, drawn from the board
+  layout files (dir 10/64-69: space positions + chains) projected through each background's own camera (fov,
+  eye, look-at in file 0 of the background; PartyPlanner64 documents the MP2 projection). Boards: Western 2,
+  Pirate 10, Horror 16 (day) + 21 (night), Space 24, Mystery 30, Bowser 37; route maps 8, 15, 22/23, 29, 35, 42.
+  Framed NPC portraits (0/92-132: Koopas, Toads, Bowser and his costumes, Goomba, Boo, Shy Guys, Bob-omb, Thwomps,
+  shark, Kamek, Koopa Kids) and framed item squares are painted (`portraits2.py`). The kept colour grid is now
+  alpha-weighted (`cleanroom.decomp.spec.grid(weighted=True)`): the colour stored under transparent pixels no
+  longer tints sprite edges (the splash sprites turned green because of it). Voices: the voice block is four
+  lines per character (Mario 95-98, Luigi 99-102, Peach 103-106, Yoshi 107-110, DK 111-114, Wario 115-118):
+  36 placeholder lines now, all seven speakers in the practice pack.
 - Also painted since the first publish: mode / difficulty badges, item icons and board space icons (the copies that
   keep an outline), title cover sprites.
 - Painted / typeset: six players' faces (near + far models, 17 expressions), HUD + menu portraits (MP1 busts),
@@ -70,16 +80,15 @@
 
 ## Next
 1. Walk a full game on the clean ROM: mode select, a real board turn, a minigame, results.
-2. Board backgrounds and the 89 minigame instruction pictures are a blur of the kept grid: draw paths / flat regions.
-3. Opaque space-icon and item squares (no kept outline), NPC portraits (0/92-132), intro arch signs (dir 14), mode badges in dir 9 (HARD/NORMAL/EASY,
+2. The 89 minigame instruction pictures and non-board scenes are still a blur of the kept grid (no layout facts to draw from yet).
+3. Opaque space-icon squares (no kept outline); Rules Land board (its background is not the figure-8 picture 43), NPC portraits (0/92-132), intro arch signs (dir 14), mode badges in dir 9 (HARD/NORMAL/EASY,
    1P-4P/COM, BATTLE/TRIAL/DUEL), name plates 10/359-368.
-4. Palette sharing: splash sprites 0/48/p8-12 turn green because they share 16 colours with typeset digits.
-5. Voices: confirm speakers by ear; Yoshi and DK have no lines yet.
+5. Voices: confirm speakers by ear (the four-per-character layout is inferred from two clear lines).
 
 ## For the morning
 - Open https://andrewnakas.github.io/marioparty2-cleanroom/ : Enter = Start, X = A. First ROM download can take a
   minute. Tell me what looks wrong first.
-- Known rough spots: backgrounds are blurred colour; many icons are colour blobs; Wario's face layout is a guess.
+- Known rough spots: scenery away from the board paths is blurred colour; minigame instruction pictures are blurred.
 - To record voices: `D:/n64work/mp2work/practice/` (SCRIPT.txt + `practice_<who>_call_and_response.wav`). Lines marked
   (?) had their speaker and sometimes their words guessed by a speech recogniser: listen first.
 - Another session's folder `D:/n64work/marioparty2/` (ROM-import emulator bridge) was left untouched.
